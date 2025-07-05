@@ -1,0 +1,41 @@
+{
+  "name": "space-finder",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test-services": "jest --config jest.services.config.ts",
+    "test-infra": "jest --config jest.infra.config.ts",
+    "test": "npm run test-services && npm run test-infra",
+    "deploy": "cdk deploy --all --require-approval never --outputs-file outputs.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@jest/types": "^30.0.1",
+    "@smithy/types": "^4.3.1",
+    "@types/aws-lambda": "^8.10.150",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.0.3",
+    "@types/uuid": "^10.0.0",
+    "aws-cdk": "^2.1018.1",
+    "aws-cdk-lib": "^2.201.0",
+    "constructs": "^10.4.2",
+    "jest": "^30.0.3",
+    "ts-jest": "^29.4.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@aws-amplify/auth": "^6.13.1",
+    "@aws-sdk/client-cognito-identity": "^3.830.0",
+    "@aws-sdk/client-dynamodb": "^3.830.0",
+    "@aws-sdk/client-s3": "^3.830.0",
+    "@aws-sdk/credential-providers": "^3.830.0",
+    "@aws-sdk/lib-dynamodb": "^3.830.0",
+    "aws-amplify": "^6.15.1",
+    "aws-xray-sdk-core": "^3.10.3"
+  }
+}

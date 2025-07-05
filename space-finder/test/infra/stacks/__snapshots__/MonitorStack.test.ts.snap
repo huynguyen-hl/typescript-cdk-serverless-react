@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`MonitorStack test suite should match Cloudwatch Alarm snapshot 1`] = `
+{
+  "spaceApi4xxAlarm8E4FAA1F": {
+    "Properties": {
+      "AlarmActions": [
+        {
+          "Ref": "ApiSpaceSnsTopic4F7D337B",
+        },
+      ],
+      "AlarmName": "spaceApi4xxAlarm",
+      "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+      "Dimensions": [
+        {
+          "Name": "ApiName",
+          "Value": "SpacesApi",
+        },
+      ],
+      "EvaluationPeriods": 1,
+      "MetricName": "4XXError",
+      "Namespace": "AWS/ApiGateway",
+      "Period": 60,
+      "Statistic": "Sum",
+      "Threshold": 5,
+      "Unit": "Count",
+    },
+    "Type": "AWS::CloudWatch::Alarm",
+  },
+}
+`;
+
+exports[`MonitorStack test suite should match MonitorStack snapshot 1`] = `
+{
+  "Parameters": {
+    "BootstrapVersion": {
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]",
+      "Type": "AWS::SSM::Parameter::Value<String>",
+    },
+  },
+  "Resources": {
+    "ApiSpaceSnsTopic4F7D337B": {
+      "Properties": {
+        "FifoTopic": false,
+        "TopicName": "ApiSpaceSnsTopic",
+      },
+      "Type": "AWS::SNS::Topic",
+    },
+    "ApiSpaceSnsTopicscythedeadhgmailcom17D5A525": {
+      "Properties": {
+        "Endpoint": "scythedead.h@gmail.com",
+        "Protocol": "email",
+        "TopicArn": {
+          "Ref": "ApiSpaceSnsTopic4F7D337B",
+        },
+      },
+      "Type": "AWS::SNS::Subscription",
+    },
+    "spaceApi4xxAlarm8E4FAA1F": {
+      "Properties": {
+        "AlarmActions": [
+          {
+            "Ref": "ApiSpaceSnsTopic4F7D337B",
+          },
+        ],
+        "AlarmName": "spaceApi4xxAlarm",
+        "ComparisonOperator": "GreaterThanOrEqualToThreshold",
+        "Dimensions": [
+          {
+            "Name": "ApiName",
+            "Value": "SpacesApi",
+          },
+        ],
+        "EvaluationPeriods": 1,
+        "MetricName": "4XXError",
+        "Namespace": "AWS/ApiGateway",
+        "Period": 60,
+        "Statistic": "Sum",
+        "Threshold": 5,
+        "Unit": "Count",
+      },
+      "Type": "AWS::CloudWatch::Alarm",
+    },
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                  ],
+                  {
+                    "Ref": "BootstrapVersion",
+                  },
+                ],
+              },
+            ],
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI.",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`MonitorStack test suite should match SNS Email Subscription snapshot 1`] = `
+{
+  "ApiSpaceSnsTopicscythedeadhgmailcom17D5A525": {
+    "Properties": {
+      "Endpoint": "scythedead.h@gmail.com",
+      "Protocol": "email",
+      "TopicArn": {
+        "Ref": "ApiSpaceSnsTopic4F7D337B",
+      },
+    },
+    "Type": "AWS::SNS::Subscription",
+  },
+}
+`;
+
+exports[`MonitorStack test suite should match SNS Topic snapshot 1`] = `
+{
+  "ApiSpaceSnsTopic4F7D337B": {
+    "Properties": {
+      "FifoTopic": false,
+      "TopicName": "ApiSpaceSnsTopic",
+    },
+    "Type": "AWS::SNS::Topic",
+  },
+}
+`;

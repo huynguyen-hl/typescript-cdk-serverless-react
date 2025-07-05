@@ -1,0 +1,34 @@
+@apiGatewayEndpoint = https://lkdhdgo1ok.execute-api.ap-southeast-1.amazonaws.com/prod
+@token = eyJraWQiOiJnQlJGa3B5SDByUnYwdjRwbm9SNmsySGVZeGJSWmxcL0ZGSzZFQkw4NmNJND0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiI5OWZhOTVlYy1jMDQxLTcwNWQtOTgzNy05NWE0MzE3NGI1YjIiLCJjb2duaXRvOmdyb3VwcyI6WyJhZG1pbnMiXSwiaXNzIjoiaHR0cHM6XC9cL2NvZ25pdG8taWRwLmFwLXNvdXRoZWFzdC0xLmFtYXpvbmF3cy5jb21cL2FwLXNvdXRoZWFzdC0xX1R5aUhMcW1sVCIsImNvZ25pdG86dXNlcm5hbWUiOiJodXluZ3V5ZW4iLCJvcmlnaW5fanRpIjoiMWZlY2M1YzgtZDVlMC00NTA1LWE3ZTctNjc0OWYwZjkwY2EyIiwiY29nbml0bzpyb2xlcyI6WyJhcm46YXdzOmlhbTo6NDUxNDExMDA0MTc1OnJvbGVcL0F1dGhTdGFjay1Db2duaXRvQWRtaW5Sb2xlNEMxMEZCQTQtQ2d6YUxhNHRnRTJ1Il0sImF1ZCI6IjJycGxuZTBsaWJkN2hydG42NGo2bmdvYTdqIiwiZXZlbnRfaWQiOiI4MDdmODJkYi03YWM5LTRhMjItODgwZi01ODliYTU4NWJlZjkiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTc1MDg3Njc0NSwiZXhwIjoxNzUwODgwMzQ1LCJpYXQiOjE3NTA4NzY3NDUsImp0aSI6IjA2M2Y3NGNlLTBjN2ItNGZhMC04N2UwLTgyODM1OGUyNTVkYyJ9.eqzoliZ2ky9DocVmVc3HiLPIeZHE_fHJ2W9oQ2xoo-o29LIcPDxn6c43n_QAv0N8EEA-TMu-fAGKT9vnFr3DXS05_xMPIqD5BdkqGquKlOzYnjiRUvQuqyg9lfrPuXHna6iGVmaOyRDySS1C6phh5jFhzRDhGehzffJx4W3APXrPYAFb9aK0hoI4-6E1CVZNvasgCYX71YoCYurSvTubJP19l-Ng25_Qxxyqmm0fgxZLq3P6Qq6p9ywI_DGABCq-lfIs8Jn1MiYWoKwzktfvMdV587S59Du01Z89HfSGUY17KJqImFk4GRLF0EO0HnmXr_TN8V-urk4BLfQ5rshmxA
+###
+
+POST {{apiGatewayEndpoint}}/spaces
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "location": "Paris",
+  "name": "My Paris Space"
+}
+### 
+
+GET {{apiGatewayEndpoint}}/spaces
+Authorization: {{token}}
+### 
+
+GET {{apiGatewayEndpoint}}/spaces?id=99f525d7-fb59-4254-bea7-2d84753bf515
+Authorization: {{token}}
+### 
+
+PUT {{apiGatewayEndpoint}}/spaces?id=99f525d7-fb59-4254-bea7-2d84753bf515
+Content-Type: application/json
+Authorization: {{token}}
+
+{
+  "name": "My Updated Paris Space",
+  "location": "Paris, France"
+}
+### 
+DELETE {{apiGatewayEndpoint}}/spaces?id=99f525d7-fb59-4254-bea7-2d84753bf515
+Authorization: {{token}}
+### 

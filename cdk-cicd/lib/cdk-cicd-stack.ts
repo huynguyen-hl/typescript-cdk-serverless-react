@@ -1,11 +1,13 @@
 import * as cdk from 'aws-cdk-lib';
-import { BuildSpec, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
+import { BuildSpec, LinuxBuildImage, PipelineProject, Project } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
-import { ParameterValueType } from 'aws-cdk-lib/aws-ssm';
-import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
+import {
+  CloudFormationCreateUpdateStackAction,
+  CodeBuildAction,
+  CodeBuildActionType,
+  GitHubSourceAction,
+} from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
-import { PipelineStage } from './PipelineStage';
 
 export class CdkCicdStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -27,50 +29,26 @@ export class CdkCicdStack extends cdk.Stack {
     // /codepipeline/githubtoken
     const pipeline = new Pipeline(this, 'MyPipeline');
     const sourceOutput = new Artifact();
+    const sourceAction = new GitHubSourceAction({
+      actionName: 'GitHub_Source',
+      owner: 'huynguyen-hl',
+      repo: 'typescript-cdk-serverless-react',
+      oauthToken: cdk.SecretValue.secretsManager('/codepipeline/githubtoken'),
+      output: sourceOutput,
+      branch: 'main',
+    });
 
     pipeline.addStage({
       stageName: 'Source',
-      actions: [
-        new GitHubSourceAction({
-          actionName: 'GitHub_Source',
-          owner: 'huynguyen-hl',
-          repo: 'typescript-cdk-serverless-react',
-          oauthToken: cdk.SecretValue.secretsManager('/codepipeline/githubtoken'),
-          output: sourceOutput,
-          branch: 'main',
-        }),
-      ],
+      actions: [sourceAction],
     });
 
-    pipeline.addStage({
-      stageName: 'CodeBuild-SynthCDK',
-      actions: [
-        new CodeBuildAction({
-          input: sourceOutput,
-          actionName: 'SynthCDK',
-          project: new PipelineProject(this, 'SynthCDK', {
-            buildSpec: BuildSpec.fromObject({
-              version: '0.2',
-              phases: {
-                build: {
-                  commands: [
-                    'cd cdk-cicd',
-                    'npm ci',
-                    'npx cdk synth',
-                  ],
-                },
-              },
-            }),
-          }),
-        }),
-      ],
-    });
-
-    // unit test stage
+    // test stage
     pipeline.addStage({
       stageName: 'CodeBuild-TestLambda',
       actions: [
         new CodeBuildAction({
+          type: CodeBuildActionType.TEST,
           input: sourceOutput,
           actionName: 'TestLambda',
           project: new PipelineProject(this, 'TestLambda', {
@@ -87,27 +65,48 @@ export class CdkCicdStack extends cdk.Stack {
       ],
     });
 
+    // build stage
+    const buildProject = new Project(this, 'BuildProject', {
+      environment: {
+        buildImage: LinuxBuildImage.STANDARD_7_0,
+      },
+      buildSpec: BuildSpec.fromObject({
+        version: '0.2',
+        phases: {
+          install: {
+            commands: ['cd cdk-cicd', 'npm ci'],
+          },
+          build: {
+            commands: ['cd cdk-cicd', 'npx cdk synth'],
+          },
+        },
+        artifacts: {
+          files: 'cdk-cicd/cdk.out/**/*',
+        },
+      }),
+    });
+    const buildOutput = new Artifact();
+    const buildAction = new CodeBuildAction({
+      actionName: 'CDK_Build',
+      project: buildProject,
+      input: sourceOutput,
+      outputs: [buildOutput],
+    });
+
+    pipeline.addStage({
+      stageName: 'Build',
+      actions: [buildAction],
+    });
+
+    // finally, deploy your Lambda Stack
     pipeline.addStage({
       stageName: 'Deploy',
       actions: [
-        new CodeBuildAction({
-          input: sourceOutput,
-          actionName: 'DeployCDK',
-          project: new PipelineProject(this, 'DeployCDK', {
-            buildSpec: BuildSpec.fromObject({
-              version: '0.2',
-              phases: {
-                build: {
-                  commands: [
-                    'cd cdk-cicd',
-                    'npm ci',
-                    'npx cdk synth',
-                    'npx cdk deploy --all --require-approval never',
-                  ],
-                },
-              },
-            }),
-          }),
+        new CloudFormationCreateUpdateStackAction({
+          actionName: 'Lambda_CFN_Deploy',
+          templatePath: buildOutput.atPath('cdk-cicd/cdk.out/LambdaStack.template.json'),
+          stackName: 'LambdaStack',
+          adminPermissions: true,
         }),
       ],
     });

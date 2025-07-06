@@ -57,7 +57,6 @@ export class CdkCicdStack extends cdk.Stack {
                     'cd cdk-cicd',
                     'npm ci',
                     'npx cdk synth',
-                    // 'npx cdk deploy --all --require-approval never',
                   ],
                 },
               },

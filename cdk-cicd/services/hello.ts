@@ -1,8 +1,8 @@
-function handler(event: any, context: any, callback: Function) {
-  return callback(null, {
+function handler(event: any, context: any) {
+  return {
     statusCode: 200,
-    body: JSON.stringify('Hello from Lambda!!')
-  })
+    body: JSON.stringify('Hello from Lambda!!'),
+  };
 }
 
 export { handler };

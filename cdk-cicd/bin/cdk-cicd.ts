@@ -7,4 +7,6 @@ const app = new cdk.App();
 
 new CdkCicdStack(app, 'CdkCicdStack');
 
+new LambdaStack(app, 'LambdaStack');
+
 app.synth();

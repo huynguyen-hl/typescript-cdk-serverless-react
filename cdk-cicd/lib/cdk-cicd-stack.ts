@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import { BuildSpec, LinuxBuildImage, PipelineProject, Project } from 'aws-cdk-lib/aws-codebuild';
-import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
+import { Artifact, ArtifactPath, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import {
   CloudFormationCreateUpdateStackAction,
   CodeBuildAction,
@@ -28,7 +28,7 @@ export class CdkCicdStack extends cdk.Stack {
 
     // /codepipeline/githubtoken
     const pipeline = new Pipeline(this, 'MyPipeline');
-    const sourceOutput = new Artifact();
+    const sourceOutput = new Artifact('Github-source-code');
     const sourceAction = new GitHubSourceAction({
       actionName: 'GitHub_Source',
       owner: 'huynguyen-hl',
@@ -77,7 +77,7 @@ export class CdkCicdStack extends cdk.Stack {
             commands: ['cd cdk-cicd', 'npm ci'],
           },
           build: {
-            commands: ['pwd', 'npx cdk synth'],
+            commands: ['npx cdk synth'],
           },
         },
         artifacts: {
@@ -85,7 +85,7 @@ export class CdkCicdStack extends cdk.Stack {
         },
       }),
     });
-    const buildOutput = new Artifact();
+    const buildOutput = new Artifact('CDK_Build-output');
     const buildAction = new CodeBuildAction({
       actionName: 'CDK_Build',
       project: buildProject,
@@ -104,7 +104,9 @@ export class CdkCicdStack extends cdk.Stack {
       actions: [
         new CloudFormationCreateUpdateStackAction({
           actionName: 'Lambda_CFN_Deploy',
-          templatePath: buildOutput.atPath('cdk-cicd/cdk.out/LambdaStack.template.json'),
+          
+          // templatePath: buildOutput.atPath('cdk-cicd/cdk.out/LambdaStack.template.json'),
+          templatePath: new ArtifactPath(buildOutput, 'cdk-cicd/cdk.out/LambdaStack.template.json'),
           stackName: 'LambdaStack',
           adminPermissions: true,
         }),

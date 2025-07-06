@@ -43,11 +43,11 @@ export class CdkCicdStack extends cdk.Stack {
     });
 
     pipeline.addStage({
-      stageName: 'CodeBuild',
+      stageName: 'CodeBuild-SynthCDK',
       actions: [
         new CodeBuildAction({
           input: sourceOutput,
-          actionName: 'CodeBuild',
+          actionName: 'SynthCDK',
           project: new PipelineProject(this, 'SynthCDK', {
             buildSpec: BuildSpec.fromObject({
               version: '0.2',
@@ -57,7 +57,7 @@ export class CdkCicdStack extends cdk.Stack {
                     'cd cdk-cicd',
                     'npm ci',
                     'npx cdk synth',
-                    'npx cdk deploy --all --require-approval never',
+                    // 'npx cdk deploy --all --require-approval never',
                   ],
                 },
               },
@@ -67,10 +67,45 @@ export class CdkCicdStack extends cdk.Stack {
       ],
     });
 
-    pipeline.addStage(
-      new PipelineStage(this, 'PipelineTestStage', {
-        stageName: 'test',
-      })
-    );
+    // unit test stage
+    pipeline.addStage({
+      stageName: 'CodeBuild-TestLambda',
+      actions: [
+        new CodeBuildAction({
+          input: sourceOutput,
+          actionName: 'TestLambda',
+          project: new PipelineProject(this, 'TestLambda', {
+            buildSpec: BuildSpec.fromObject({
+              version: '0.2',
+              phases: {
+                build: {
+                  commands: ['cd cdk-cicd'],
+                },
+              },
+            }),
+          }),
+        }),
+      ],
+    });
+
+    pipeline.addStage({
+      stageName: 'Deploy',
+      actions: [
+        new CodeBuildAction({
+          input: sourceOutput,
+          actionName: 'DeployCDK',
+          project: new PipelineProject(this, 'DeployCDK', {
+            buildSpec: BuildSpec.fromObject({
+              version: '0.2',
+              phases: {
+                build: {
+                  commands: ['cd cdk-cicd', 'npm ci', 'npx cdk deploy --all --require-approval never'],
+                },
+              },
+            }),
+          }),
+        }),
+      ],
+    });
   }
 }

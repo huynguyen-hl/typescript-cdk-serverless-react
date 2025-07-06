@@ -6,3 +6,5 @@ const app = new cdk.App();
 new CdkCicdStack(app, 'CdkCicdStack', {
   
 });
+
+app.synth();

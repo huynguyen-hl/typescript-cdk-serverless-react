@@ -77,7 +77,7 @@ export class CdkCicdStack extends cdk.Stack {
             commands: ['cd cdk-cicd', 'npm ci'],
           },
           build: {
-            commands: ['cd cdk-cicd', 'npx cdk synth'],
+            commands: ['pwd', 'npx cdk synth'],
           },
         },
         artifacts: {

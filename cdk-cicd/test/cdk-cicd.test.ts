@@ -1,17 +1,9 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as CdkCicd from '../lib/cdk-cicd-stack';
+import { handler } from '../services/hello';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/cdk-cicd-stack.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//     // WHEN
-//   const stack = new CdkCicd.CdkCicdStack(app, 'MyTestStack');
-//     // THEN
-//   const template = Template.fromStack(stack);
+describe('hello function', () => {
+  it('should return status code 200', () => {
+    const result = handler({}, {});
 
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+    expect(result.statusCode).toEqual(200);
+  });
 });

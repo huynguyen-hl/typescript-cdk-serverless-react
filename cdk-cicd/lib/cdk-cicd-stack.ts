@@ -79,7 +79,7 @@ export class CdkCicdStack extends cdk.Stack {
               version: '0.2',
               phases: {
                 build: {
-                  commands: ['cd cdk-cicd'],
+                  commands: ['cd cdk-cicd', 'npm ci', 'npm test'],
                 },
               },
             }),
@@ -99,7 +99,11 @@ export class CdkCicdStack extends cdk.Stack {
               version: '0.2',
               phases: {
                 build: {
-                  commands: ['cd cdk-cicd', 'npm ci', 'npx cdk deploy --all --require-approval never'],
+                  commands: [
+                    'cd cdk-cicd',
+                    'npm ci',
+                    'npx cdk deploy --all --require-approval never',
+                  ],
                 },
               },
             }),

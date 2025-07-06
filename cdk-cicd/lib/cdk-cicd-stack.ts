@@ -5,6 +5,7 @@ import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipelin
 import { ParameterValueType } from 'aws-cdk-lib/aws-ssm';
 import { CodePipeline, CodePipelineSource, ShellStep } from 'aws-cdk-lib/pipelines';
 import { Construct } from 'constructs';
+import { PipelineStage } from './PipelineStage';
 
 export class CdkCicdStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -52,7 +53,12 @@ export class CdkCicdStack extends cdk.Stack {
               version: '0.2',
               phases: {
                 build: {
-                  commands: ['cd cdk-cicd', 'npm ci', 'npx cdk synth'],
+                  commands: [
+                    'cd cdk-cicd',
+                    'npm ci',
+                    'npx cdk synth',
+                    'npx cdk deploy --all --require-approval never',
+                  ],
                 },
               },
             }),
@@ -60,5 +66,11 @@ export class CdkCicdStack extends cdk.Stack {
         }),
       ],
     });
+
+    pipeline.addStage(
+      new PipelineStage(this, 'PipelineTestStage', {
+        stageName: 'test',
+      })
+    );
   }
 }
